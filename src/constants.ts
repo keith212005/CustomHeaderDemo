@@ -1,0 +1,23 @@
+export const HEADER_HEIGHT = 150;
+export const IMAGES = [
+  {id: 1, uri: 'https://picsum.photos/id/1/200/300'},
+  {id: 2, uri: 'https://picsum.photos/id/2/200/300'},
+  {id: 3, uri: 'https://picsum.photos/id/3/200/300'},
+  {id: 4, uri: 'https://picsum.photos/id/4/200/300'},
+  {id: 5, uri: 'https://picsum.photos/id/5/200/300'},
+  {id: 6, uri: 'https://picsum.photos/id/6/200/300'},
+  {id: 7, uri: 'https://picsum.photos/id/7/200/300'},
+  {id: 8, uri: 'https://picsum.photos/id/8/200/300'},
+  {id: 9, uri: 'https://picsum.photos/id/9/200/300'},
+  {id: 10, uri: 'https://picsum.photos/id/10/200/300'},
+  {id: 11, uri: 'https://picsum.photos/id/11/200/300'},
+  {id: 12, uri: 'https://picsum.photos/id/12/200/300'},
+  {id: 13, uri: 'https://picsum.photos/id/13/200/300'},
+  {id: 14, uri: 'https://picsum.photos/id/14/200/300'},
+  {id: 15, uri: 'https://picsum.photos/id/15/200/300'},
+  {id: 16, uri: 'https://picsum.photos/id/16/200/300'},
+  {id: 17, uri: 'https://picsum.photos/id/17/200/300'},
+  {id: 18, uri: 'https://picsum.photos/id/18/200/300'},
+  {id: 19, uri: 'https://picsum.photos/id/19/200/300'},
+  {id: 20, uri: 'https://picsum.photos/id/20/200/300'},
+];
