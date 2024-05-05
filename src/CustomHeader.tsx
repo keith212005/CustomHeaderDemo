@@ -1,40 +1,62 @@
-import * as React from 'react';
-import {Text, View, Animated} from 'react-native';
+import React, {useEffect} from 'react';
 import {HEADER_HEIGHT} from './constants';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+  interpolate,
+  Extrapolation,
+  Easing,
+} from 'react-native-reanimated';
 
 interface CustomHeaderProps {
+  y: any;
   direction: string;
 }
 
 export const CustomHeader = (props: CustomHeaderProps) => {
-  const transY = React.useRef(new Animated.Value(0));
-  const {direction} = props;
+  const transY = useSharedValue(0);
+  const {direction, y} = props;
 
-  React.useEffect(() => {
-    if (direction == 'up') {
-      startAnimation(0);
+  useEffect(() => {
+    if (direction === 'up') {
+      transY.value = withTiming(0, {
+        duration: 300,
+        easing: Easing.out(Easing.ease),
+      });
     } else {
-      startAnimation(-150);
+      transY.value = withTiming(-HEADER_HEIGHT, {
+        duration: 300,
+        easing: Easing.out(Easing.ease),
+      });
     }
   }, [direction]);
 
-  const startAnimation = (toValue: number) => {
-    Animated.timing(transY.current, {
-      toValue,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  };
+  const headerStyle = useAnimatedStyle(() => {
+    const translateY = interpolate(
+      transY.value,
+      [-HEADER_HEIGHT, 0],
+      [-HEADER_HEIGHT, 0],
+      Extrapolation.CLAMP,
+    );
 
-  const opacity = transY.current.interpolate({
-    inputRange: [-150, 0],
-    outputRange: [0, 1],
-    extrapolate: 'clamp',
+    const opacity = interpolate(
+      transY.value,
+      [-HEADER_HEIGHT, 0],
+      [0, 1],
+      Extrapolation.CLAMP,
+    );
+
+    return {
+      transform: [{translateY: translateY}],
+      opacity,
+    };
   });
 
   return (
     <Animated.View
       style={[
+        headerStyle,
         {
           height: HEADER_HEIGHT,
           backgroundColor: 'lightblue',
@@ -46,9 +68,8 @@ export const CustomHeader = (props: CustomHeaderProps) => {
           right: 0,
           zIndex: 2,
           elevation: 1000,
-          transform: [{translateY: transY.current}],
-          opacity,
         },
-      ]}></Animated.View>
+      ]}
+    />
   );
 };

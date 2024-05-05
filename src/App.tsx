@@ -1,32 +1,32 @@
 import {useState, useRef} from 'react';
-import {View, Image, FlatList, Text} from 'react-native';
+import {View, Image} from 'react-native';
 import {CustomHeader} from './CustomHeader';
-import {IMAGES} from './constants';
-
-const HEADER_HEIGHT = 150;
+import {HEADER_HEIGHT, IMAGES} from './constants';
+import Animated, {useSharedValue} from 'react-native-reanimated';
 
 const App = () => {
   const currentOffset = useRef(0);
   const currentScrollingDirection = useRef('up');
   const [scrollingDirection, setScrollingDirection] = useState('up');
+  const y = useSharedValue(0);
 
   const handleScroll = (event: any) => {
     const offSetY = event.nativeEvent.contentOffset.y;
     const direction = offSetY > currentOffset.current ? 'down' : 'up';
     if (currentScrollingDirection.current !== direction) {
-      console.log(`currentScrollingDirectionl>>>`, scrollingDirection);
-
       currentScrollingDirection.current = direction;
       setScrollingDirection(direction);
     }
     currentOffset.current = offSetY;
+    y.value = offSetY;
   };
 
   return (
     <View style={{flex: 1}}>
-      <CustomHeader direction={scrollingDirection} />
+      <CustomHeader y={y} direction={scrollingDirection} />
 
-      <FlatList
+      <Animated.FlatList
+        bounces={false}
         data={IMAGES}
         onScroll={handleScroll}
         scrollEventThrottle={16}
