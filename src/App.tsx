@@ -1,47 +1,36 @@
-import * as React from 'react';
-import {View, Image} from 'react-native';
-import Animated, {
-  useAnimatedScrollHandler,
-  useSharedValue,
-} from 'react-native-reanimated';
+import {useState, useRef} from 'react';
+import {View, Image, FlatList, Text} from 'react-native';
 import {CustomHeader} from './CustomHeader';
 import {IMAGES} from './constants';
 
-interface AppProps {}
-
 const HEADER_HEIGHT = 150;
 
-const App = (props: AppProps) => {
-  const scrollY = useSharedValue(0);
-  const scrollDirection = useSharedValue<'up' | 'down'>('down'); // Track scroll direction
+const App = () => {
+  const currentOffset = useRef(0);
+  const currentScrollingDirection = useRef('up');
+  const [scrollingDirection, setScrollingDirection] = useState('up');
 
-  const handleScroll = useAnimatedScrollHandler({
-    onScroll: event => {
-      const currentOffset = event.contentOffset.y;
-      const previousOffset = scrollY.value;
+  const handleScroll = (event: any) => {
+    const offSetY = event.nativeEvent.contentOffset.y;
+    const direction = offSetY > currentOffset.current ? 'down' : 'up';
+    if (currentScrollingDirection.current !== direction) {
+      console.log(`currentScrollingDirectionl>>>`, scrollingDirection);
 
-      if (currentOffset > previousOffset && scrollDirection.value === 'down') {
-        scrollDirection.value = 'up';
-      } else if (
-        currentOffset < previousOffset &&
-        scrollDirection.value === 'up'
-      ) {
-        scrollDirection.value = 'down';
-      }
-
-      scrollY.value = currentOffset;
-    },
-  });
+      currentScrollingDirection.current = direction;
+      setScrollingDirection(direction);
+    }
+    currentOffset.current = offSetY;
+  };
 
   return (
     <View style={{flex: 1}}>
-      <CustomHeader scrollY={scrollY} scrollDirection={scrollDirection} />
+      <CustomHeader direction={scrollingDirection} />
 
-      <Animated.FlatList
+      <FlatList
         data={IMAGES}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        contentContainerStyle={{paddingTop: HEADER_HEIGHT}}
+        contentContainerStyle={{marginTop: HEADER_HEIGHT}}
         showsVerticalScrollIndicator={false}
         renderItem={({item}) => (
           <View key={item.id} style={{height: 400, margin: 20}}>

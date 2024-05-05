@@ -1,56 +1,54 @@
 import * as React from 'react';
-import {Text, View, StyleSheet} from 'react-native';
-import Animated, {
-  Extrapolation,
-  interpolate,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import {Text, View, Animated} from 'react-native';
 import {HEADER_HEIGHT} from './constants';
 
-export const CustomHeader = ({scrollY, scrollDirection}: any) => {
-  const animatedStyle = useAnimatedStyle(() => {
-    const headerY = interpolate(
-      scrollY.value / 2,
-      [0, HEADER_HEIGHT], // Interpolate headerY based on scrollY value
-      [0, -HEADER_HEIGHT], // Header fully visible when scrollY is 0, fully hidden when scrollY is HEADER_HEIGHT
-      Extrapolation.CLAMP,
-    );
+interface CustomHeaderProps {
+  direction: string;
+}
 
-    const opacity = interpolate(
-      scrollY.value / 2,
-      [0, HEADER_HEIGHT], // Interpolate opacity based on scrollY value
-      [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0], // Header fully visible when scrollY is 0, completely transparent when scrollY is HEADER_HEIGHT
-    );
+export const CustomHeader = (props: CustomHeaderProps) => {
+  const transY = React.useRef(new Animated.Value(0));
+  const {direction} = props;
 
-    const gradualOpacity = interpolate(
-      scrollY.value / 5,
-      [0, HEADER_HEIGHT], // Interpolate gradual opacity based on the distance from the target value
-      [1, 0], // Opacity changes gradually from 1 to 0 as we approach HEADER_HEIGHT
-    );
+  React.useEffect(() => {
+    if (direction == 'up') {
+      startAnimation(0);
+    } else {
+      startAnimation(-150);
+    }
+  }, [direction]);
 
-    console.log(scrollDirection.value, opacity, gradualOpacity);
+  const startAnimation = (toValue: number) => {
+    Animated.timing(transY.current, {
+      toValue,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
 
-    return {
-      transform: [{translateY: headerY}],
-      opacity: scrollDirection.value === 'up' ? gradualOpacity : opacity, // Show header if scrolling up, otherwise use the immediate opacity change
-    };
+  const opacity = transY.current.interpolate({
+    inputRange: [-150, 0],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
   });
 
   return (
     <Animated.View
       style={[
-        animatedStyle,
         {
+          height: HEADER_HEIGHT,
+          backgroundColor: 'lightblue',
+          justifyContent: 'center',
+          alignItems: 'center',
           position: 'absolute',
+          top: 0,
           left: 0,
           right: 0,
-          top: 0,
-          height: HEADER_HEIGHT,
-          backgroundColor: 'grey',
-          zIndex: 1000,
+          zIndex: 2,
           elevation: 1000,
+          transform: [{translateY: transY.current}],
+          opacity,
         },
-      ]}
-    />
+      ]}></Animated.View>
   );
 };
